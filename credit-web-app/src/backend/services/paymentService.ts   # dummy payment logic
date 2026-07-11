@@ -1,0 +1,13 @@
+export const processPayment = async (amount: number, userId: string): Promise<{ success: boolean; message: string }> => {
+    // Simulate a payment processing delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Dummy payment logic
+    if (amount <= 0) {
+        return { success: false, message: "Invalid amount." };
+    }
+
+    // Here you would typically interact with a payment gateway
+    // For this dummy implementation, we just return a success message
+    return { success: true, message: `Payment of $${amount} processed successfully for user ${userId}.` };
+};

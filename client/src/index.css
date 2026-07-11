@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/* --------------------------------------------------
+	 Global design system variables & resets
+	 -------------------------------------------------- */
+
+:root {
+	--bg-primary: #0a0e1a;
+	--bg-secondary: #111827;
+	--bg-card: #161d2e;
+	--bg-card-hover: #1e2840;
+	--accent-green: #00d084;
+	--accent-green-glow: rgba(0, 208, 132, 0.15);
+	--accent-green-dim: #00a866;
+	--text-primary: #f0f4ff;
+	--text-secondary: #8b9ac0;
+	--text-muted: #4a5578;
+	--border: rgba(255,255,255,0.07);
+	--border-accent: rgba(0, 208, 132, 0.3);
+	--shadow-card: 0 8px 32px rgba(0,0,0,0.4);
+	--shadow-glow: 0 0 40px rgba(0, 208, 132, 0.15);
+}
+
+/* font imports */
+
+html, body {
+	font-family: 'DM Sans', sans-serif;
+	background: var(--bg-primary);
+	color: var(--text-primary);
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	background-image: radial-gradient(ellipse at 20% 50%, rgba(0,208,132,0.04) 0%, transparent 50%);
+}
+
+/* headings use Syne */
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Syne', sans-serif;
+	letter-spacing: -0.03em;
+	color: var(--text-primary);
+}
+h1 { font-size: 72px; }
+h2 { font-size: 48px; }
+.card-title { font-size: 22px; }
+
+/* global utility classes */
+.bg-card { background: var(--bg-card); }
+.bg-card-hover:hover { background: var(--bg-card-hover); }
+.card {
+	background: var(--bg-card);
+	border: 1px solid var(--border);
+	border-radius: 20px;
+	backdrop-filter: blur(20px);
+	transition: all 0.3s ease;
+}
+.card:hover {
+	border-color: var(--border-accent);
+	box-shadow: var(--shadow-glow);
+}
+
+/* scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* selection */
+::selection { background: var(--accent-green); color: #000; }
+
+/* animations */
+@keyframes fadeUp {
+	from { opacity: 0; transform: translateY(20px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+.animate-in { animation: fadeUp 0.5s ease forwards; }
+
+@keyframes float {
+	0%,100% { transform: translateY(0px) scale(1); }
+	50% { transform: translateY(-20px) scale(1.05); }
+}
+
+@keyframes glowPulse {
+	0%,100% { box-shadow: 0 0 20px rgba(0,208,132,0.3); }
+	50% { box-shadow: 0 0 40px rgba(0,208,132,0.6); }
+}
+.btn-primary { animation: glowPulse 2s ease-in-out infinite; }
+
+/* hero orbs */
+.orb {
+	position: absolute;
+	border-radius: 50%;
+	opacity: 0.25;
+	animation: float 6s ease-in-out infinite;
+}
+
+/* add delays via inline style when used */
