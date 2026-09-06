@@ -14,7 +14,9 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "server/index.js" },
     { "src": "/ping", "dest": "server/index.js" },
+    { "src": "/assets/(.*)", "dest": "/client/assets/$1" },
+    { "src": "/(.*\\.(png|jpg|jpeg|svg|ico|webp|txt|json))", "dest": "/client/$1" },
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "/client/index.html" }
   ]
 }
