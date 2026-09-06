@@ -25,7 +25,7 @@ app.use("/api/payment" , paymentRouter)
 
 // simple health check route so frontend can verify server is running
 app.get("/ping", (req, res) => {
-    res.status(200).send("pong");
+    res.status(200).json({ message: "ping" });
 });
 
 const PORT = process.env.PORT || 5000
@@ -43,4 +43,8 @@ const startServer = async () => {
     }
 }
 
-startServer();
+if (!process.env.VERCEL) {
+    startServer();
+}
+
+export default app;
