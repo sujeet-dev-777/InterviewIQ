@@ -10,7 +10,6 @@
     "dev": "nodemon index.js"
   },
   "dependencies": {
-    "@napi-rs/canvas": "^1.0.8",
     "axios": "^1.13.5",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -21,7 +20,7 @@
     "mongoose": "^9.2.1",
     "multer": "^2.0.2",
     "nodemon": "^3.1.11",
-    "pdfjs-dist": "^5.4.624",
+    "pdfjs-dist": "^4.7.76",
     "razorpay": "^2.9.6",
     "stripe": "^12.18.0"
   }
