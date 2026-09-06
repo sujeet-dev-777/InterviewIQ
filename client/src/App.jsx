@@ -11,18 +11,12 @@ import Pricing from './pages/Pricing'
 import InterviewReport from './pages/InterviewReport'
 import PaymentSuccess from './pages/PaymentSuccess'
 
-// make sure this matches the PORT used by the Express server (see server/.env)
-// the server `.env` in this repo currently sets PORT=8000, so that is the
-// value we should hit by default. you can override via a client env var as
-// shown below.
-// (Vite exposes variables prefixed with VITE_.)
-// create a `client/.env` containing:
-//
-// VITE_SERVER_URL="http://localhost:8000"
-//
-// the fallback is also set to 8000 so you don't have to create the file.
+// In development the Express server runs separately on port 8000 (see server/.env).
+// In production the API is deployed alongside the frontend on the same origin,
+// so requests go to relative `/api/...` paths. Override with VITE_SERVER_URL if needed.
 export const ServerUrl =
-  import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
+  import.meta.env.VITE_SERVER_URL ??
+  (import.meta.env.DEV ? "http://localhost:8000" : "");
 
 function App() {
 

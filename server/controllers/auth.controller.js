@@ -13,9 +13,10 @@ export const googleAuth = async (req,res) => {
             })
         }
         let token = await genToken(user._id)
+        const isProduction = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL)
         res.cookie("token" , token , {
             httpOnly: true,
-            secure: false,
+            secure: isProduction,
             sameSite: "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000
         })

@@ -1,16 +1,31 @@
 import mongoose from "mongoose";
 
+let connectionPromise = null
+
 const connectDb = async () => {
-    try {
-        // mongoose 7+ includes sane defaults; explicit options are no longer needed
-        // simply pass the connection string and any app‑specific settings if necessary
-        await mongoose.connect(process.env.MONGODB_URL)
-        console.log("DataBase Connected")
-    } catch (error) {
-        console.error(`DataBase Error ${error}`)
-        // rethrow so callers know the connection failed
-        throw error
+    if (mongoose.connection.readyState === 1) {
+        return mongoose.connection
     }
+
+    if (!process.env.MONGODB_URL) {
+        throw new Error("MONGODB_URL environment variable is not set")
+    }
+
+    if (!connectionPromise) {
+        connectionPromise = mongoose
+            .connect(process.env.MONGODB_URL, { serverSelectionTimeoutMS: 10000 })
+            .then((conn) => {
+                console.log("DataBase Connected")
+                return conn
+            })
+            .catch((error) => {
+                connectionPromise = null
+                console.error(`DataBase Error ${error}`)
+                throw error
+            })
+    }
+
+    return connectionPromise
 }
 
 export default connectDb

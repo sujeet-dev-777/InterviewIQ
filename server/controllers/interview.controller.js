@@ -1,5 +1,4 @@
 import fs from "fs"
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { askAi } from "../services/openRouter.service.js";
 import User from "../models/user.model.js";
 import Interview from "../models/interview.model.js";
@@ -14,6 +13,9 @@ export const analyzeResume = async (req, res) => {
     const fileBuffer = await fs.promises.readFile(filepath)
     const uint8Array = new Uint8Array(fileBuffer)
 
+    // pdfjs pulls in a native canvas binding at import time; load it lazily so a
+    // missing binding only breaks resume parsing instead of the whole API.
+    const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
     const pdf = await pdfjsLib.getDocument({ data: uint8Array }).promise;
 
     let resumeText = "";
