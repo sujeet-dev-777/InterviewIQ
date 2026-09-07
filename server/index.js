@@ -29,6 +29,26 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 
+let dbConnectionPromise
+const ensureDbConnection = () => {
+    if (!dbConnectionPromise) {
+        dbConnectionPromise = connectDb()
+    }
+
+    return dbConnectionPromise
+}
+
+if (process.env.VERCEL) {
+    app.use(async (req, res, next) => {
+        try {
+            await ensureDbConnection()
+            next()
+        } catch (err) {
+            next(err)
+        }
+    })
+}
+
 app.use("/api/auth" , authRouter)
 app.use("/api/user", userRouter)
 app.use("/api/interview" , interviewRouter)
@@ -44,7 +64,7 @@ const PORT = process.env.PORT || 5000
 // this prevents Mongoose from buffering queries when the first request arrives
 const startServer = async () => {
     try {
-        await connectDb()
+        await ensureDbConnection()
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`)
         })
