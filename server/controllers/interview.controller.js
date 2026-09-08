@@ -1,9 +1,7 @@
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import * as pdfjsWorker from "pdfjs-dist/legacy/build/pdf.worker.mjs";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/legacy/build/pdf.worker.mjs",
-  import.meta.url
-).toString();
+globalThis.pdfjsWorker = pdfjsWorker;
 
 import { askAi } from "../services/openRouter.service.js";
 import User from "../models/user.model.js";
