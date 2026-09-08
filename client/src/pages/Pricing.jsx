@@ -70,29 +70,24 @@ function Pricing() {
         ServerUrl + "/api/payment/order",
         {
           planId: plan.id,
-          amount: amount,
+          amount,
           credits: plan.credits,
         },
         { withCredentials: true }
       );
 
-      const sessionId = result.data.sessionId;
-      const stripe = window.Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-      if (!stripe) {
-        alert("Stripe failed to load. Please refresh the page.");
-        return;
-      }
-      const response = await stripe.redirectToCheckout({ sessionId });
-      if (response?.error) {
-        console.error("Stripe redirect error", response.error);
-        alert("Failed to initialize payment: " + response.error.message);
+      if (!result.data.url) {
+        throw new Error("Stripe checkout URL was not returned.");
       }
 
-      // after this point the page will navigate away to the Stripe-hosted
-      // checkout and the rest of the flow is handled in /payment-success
-      setLoadingPlan(null);
+      window.location.href = result.data.url;
     } catch (error) {
-      console.log(error);
+      console.error("Payment error:", error.response?.data || error);
+      alert(
+        error.response?.data?.message ||
+        error.message ||
+        "Payment initialization failed."
+      );
       setLoadingPlan(null);
     }
   }

@@ -1,27 +1,49 @@
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+import User from "../models/user.model.js";
 
-
-const isAuth = async (req,res,next) => {
+const isAuth = async (req, res, next) => {
     try {
-        let {token} = req.cookies
+        const token = req.cookies?.token;
 
-        if(!token){
-            return res.status(400).json({message:"user does not have a token"})
+        if (!token) {
+            return res.status(401).json({
+                message: "Authentication required."
+            });
         }
-        const verifyToken = jwt.verify(token , process.env.JWT_SECRET)
-        
-        if(!verifyToken){
-            return res.status(400).json({message:"user does not have a valid token"})
+
+        let decoded;
+
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (error) {
+            return res.status(401).json({
+                message: "Invalid or expired session."
+            });
         }
-        req.userId = verifyToken.userId
 
-        next()
-   
+        const user = await User.findById(decoded.userId);
 
+        if (!user) {
+            res.clearCookie("token", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none"
+            });
+
+            return res.status(401).json({
+                message: "User account not found. Please sign in again."
+            });
+        }
+
+        req.userId = user._id;
+        next();
     } catch (error) {
-        return res.status(500).json({message:`isAuth error ${error}`})
-    }
-    
-}
+        console.error("Authentication middleware error:", error);
 
-export default isAuth
+        return res.status(500).json({
+            message: "Authentication failed."
+        });
+    }
+};
+
+export default isAuth;

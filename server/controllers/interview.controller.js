@@ -1,4 +1,3 @@
-import fs from "fs"
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { askAi } from "../services/openRouter.service.js";
 import User from "../models/user.model.js";
@@ -9,16 +8,12 @@ export const analyzeResume = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "Resume required" });
     }
-    const filepath = req.file.path
 
-    const fileBuffer = await fs.promises.readFile(filepath)
-    const uint8Array = new Uint8Array(fileBuffer)
-
+    const uint8Array = new Uint8Array(req.file.buffer);
     const pdf = await pdfjsLib.getDocument({ data: uint8Array }).promise;
 
     let resumeText = "";
 
-    // Extract text from all pages
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       const page = await pdf.getPage(pageNum);
       const content = await page.getTextContent();
@@ -27,10 +22,13 @@ export const analyzeResume = async (req, res) => {
       resumeText += pageText + "\n";
     }
 
+    resumeText = resumeText.replace(/\s+/g, " ").trim();
 
-    resumeText = resumeText
-      .replace(/\s+/g, " ")
-      .trim();
+    if (!resumeText) {
+      return res.status(400).json({
+        message: "Could not extract text from this PDF."
+      });
+    }
 
     const messages = [
       {
@@ -54,30 +52,19 @@ Return strictly JSON:
       }
     ];
 
-
-    const aiResponse = await askAi(messages)
-
+    const aiResponse = await askAi(messages);
     const parsed = JSON.parse(aiResponse);
 
-    fs.unlinkSync(filepath)
-
-
-    res.json({
-      role: parsed.role,
-      experience: parsed.experience,
-      projects: parsed.projects,
-      skills: parsed.skills,
+    return res.json({
+      role: parsed.role || "",
+      experience: parsed.experience || "",
+      projects: parsed.projects || [],
+      skills: parsed.skills || [],
       resumeText
     });
-
   } catch (error) {
-    console.error(error);
-
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
-
-    return res.status(500).json({ message: error.message });
+    console.error("Resume analysis error:", error);
+    return res.status(500).json({ message: error.message || "Failed to analyze resume." });
   }
 };
 

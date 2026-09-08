@@ -47,7 +47,7 @@ function App() {
       try {
         const result = await axios.get(ServerUrl + "/api/user/current-user", {withCredentials:true})
         dispatch(setUserData(result.data))
-        // Persist user data to localStorage
+
         try {
           localStorage.setItem('userData', JSON.stringify(result.data))
         } catch (storageError) {
@@ -56,42 +56,13 @@ function App() {
       } catch (error) {
         console.error("Failed to fetch current user:", error.response?.status, error.response?.data?.message || error.message)
 
-        // Try to restore from localStorage if server fetch failed
-        try {
-          const savedUserData = localStorage.getItem('userData')
-          if (savedUserData) {
-            const userData = JSON.parse(savedUserData)
-            dispatch(setUserData(userData))
-            console.log("Restored user from localStorage")
-          } else {
-            dispatch(setUserData(null))
-          }
-        } catch (e) {
-          console.error("Failed to restore from localStorage:", e)
-          dispatch(setUserData(null))
-          try {
-            localStorage.removeItem('userData')
-          } catch (clearError) {
-            console.warn("Failed to clear localStorage:", clearError)
-          }
-        }
-      }
-    }
+        dispatch(setUserData(null));
 
-    // Check localStorage first before making API call
-    try {
-      const savedUserData = localStorage.getItem('userData')
-      if (savedUserData) {
-        const userData = JSON.parse(savedUserData)
-        dispatch(setUserData(userData))
-        console.log("Loaded user from localStorage")
-      }
-    } catch (e) {
-      console.error("Failed to load from localStorage on startup:", e)
-      try {
-        localStorage.removeItem('userData')
-      } catch (clearError) {
-        console.warn("Failed to clear localStorage on startup:", clearError)
+        try {
+          localStorage.removeItem('userData');
+        } catch (e) {
+          console.warn("Failed to clear user data:", e)
+        }
       }
     }
 
