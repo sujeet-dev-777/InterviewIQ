@@ -29,9 +29,9 @@ export const createOrder = async (req, res) => {
             success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.CLIENT_URL}/pricing`,
             metadata: {
-                userId: req.userId,
-                planId,
-                credits,
+                userId: String(req.userId),
+                planId: String(planId),
+                credits: String(credits),
             },
         });
 
